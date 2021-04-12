@@ -22,7 +22,6 @@ labels = pd.read_csv("C:/Users/khenn/OneDrive/Documents/SP2021/CSE5243/Data Chal
 
 #%%
 ## Pre-processing
-
 ## Vital measurement extraction: heart rate, blood pressure, respiratory rate, oxygen saturation
 labels['mortality'].value_counts()
 
@@ -46,6 +45,7 @@ features_max.columns = ['heartrate_max', 'meanbp_max', 'resprate_max', 'spo2_max
 features_min = pd.DataFrame(features.groupby("adm_id")[['heartrate', 'meanbp', 'resprate', 'spo2']].min())
 features_min.columns = ['heartrate_min', 'meanbp_min', 'resprate_min', 'spo2_min']
 
+
 ## Merge max, min, and mean dataframes
 feat_summary = features_mean.merge(features_max, on = 'adm_id', how = 'left')
 feat_summary = feat_summary.merge(features_min, on = 'adm_id', how = 'left')
@@ -61,8 +61,9 @@ full_df = full_df.set_index('adm_id')
 ## Drop NaN values
 full_df = full_df.dropna()
 
+
 ## Create Training and validation set
-X_train, X_valid, y_train, y_valid = train_test_split(full_df, full_df['mortality'], test_size=0.2, random_state=1)
+X_train, X_valid, y_train, y_valid = train_test_split(full_df.iloc[:,:-1], full_df['mortality'], test_size=0.2, random_state=1)
 
 #%% Results and Comparison 
 
@@ -128,8 +129,6 @@ roc(y_valid, log_prob, "Logistic Regression")
 disp_log = metrics.plot_confusion_matrix(logRegr, X_valid, y_valid,cmap=plt.cm.Blues)
 disp_log.ax_.set_title("Logistic Regression")
 plt.show()
-
-
 #%% Classifier 2
 ## Naive Bayes Classifier
 ## 1st experimental dataset 
@@ -141,7 +140,7 @@ nb = MultinomialNB()
 ## Utilize GreadSearchCV to perform cross validation, CV = 5
 #grid_nb = GridSearchCV(estimator = nb,
                        # param_grid = params, 
-                        #cv = 5, 
+                       #cv = 5, 
                        # scoring = 'accuracy',
                        # verbose = 3,
                        # return_train_score = True,
